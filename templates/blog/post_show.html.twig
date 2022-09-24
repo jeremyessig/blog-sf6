@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<h2>{{ post.title }}</h2>
+		<h5>{{ post.users.firstname }}
+			{{ post.users.lastname }}</h5>
+
+
+		{{ post.content }}
+	</div>
+
+{% endblock %}

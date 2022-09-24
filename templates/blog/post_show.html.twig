@@ -9,6 +9,7 @@
 		<h5>{{ post.users.firstname }}
 			{{ post.users.lastname }}</h5>
 
+		<img style="max-width: 550px;" src="{{ vich_uploader_asset(post, 'imageFile') }}" alt="">
 
 		{{ post.content }}
 	</div>

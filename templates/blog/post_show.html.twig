@@ -12,5 +12,44 @@
 
 		{{ post.content }}
 	</div>
+	{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+		<div class="container mt-4">
+			<h4>Poster un commentaire</h4>
+			<div class="col">
+				{{ form_start(form) }}
+				<div class="col-md-4">{{ form_row(form.content) }}</div>
+
+				{{ form_rest(form) }}
+				<button class="btn btn-primary">{{ button | default('Enregistrer') }}</button>
+
+				{{ form_end(form) }}
+
+			</div>
+		</div>
+	{% else %}
+		<div class="container mt-4">
+
+			<h2>Vous devez vous connecter pour commenter</h2>
+		</div>
+
+	{% endif %}
+
+	<div class="container mt-4">
+		<h3>Commentaires</h3>
+		{% for comment in post.comments %}
+			<div class="col post-comment">
+				<h4 class="row-sm-3">{{ comment.users.firstname }}
+					{{ comment.users.lastname }}</h4>
+				<div class="row-sm-9">
+					{{ comment.content }}
+				</div>
+			</div>
+		{% else %}
+			<div class="post-comment">
+				<p>Pas de commentaire</p>
+			</div>
+		{% endfor %}
+
+	</div>
 
 {% endblock %}

@@ -2,8 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Comments;
 use App\Entity\Posts;
+use App\Form\CommentsType;
 use App\Repository\PostsRepository;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,8 +28,8 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/post/{slug}', methods: ['GET'], name: 'app_show_post')]
-    public function postShow(Posts $post, string $slug): Response
+    #[Route('/post/{slug}', methods: ['GET', 'POST'], name: 'app_show_post')]
+    public function postShow(Posts $post, string $slug, Request $request, ManagerRegistry $doctrine): Response
     {
 
         if ($post->getSlug() !== $slug) {
@@ -36,6 +40,33 @@ class HomeController extends AbstractController
                 'slug' => $post->getSlug()
             ], 301);
         }
-        return $this->render('blog/post_show.html.twig', ['post' => $post]);
+
+        $comment = new Comments();
+        // $comment->setPosts($post)->setUsers($this->getUser())->setContent("Hello World");
+        // $entityManager = $doctrine->getManager();
+        // $entityManager->persist($comment);
+        // $entityManager->flush();
+
+        //dd($post);
+
+        $form = $this->createForm(CommentsType::class, $comment);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // On persiste la nouvelle property en base de données
+            $comment->setPosts($post)->setUsers($this->getUser());
+
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($comment);
+            $entityManager->flush();
+
+
+            $this->addFlash('success', 'Bien créé avec succès');
+        }
+
+        return $this->render('blog/post_show.html.twig', [
+            'post' => $post,
+            'form' => $form->createView()
+        ]);
     }
 }
